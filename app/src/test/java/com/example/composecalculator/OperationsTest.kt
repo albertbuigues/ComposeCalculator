@@ -8,7 +8,7 @@ import org.junit.Test
 
 class OperationsTest {
 
-    lateinit var viewModel: CalculatorViewModel
+    private lateinit var viewModel: CalculatorViewModel
     private val n1 = 2
     private val n2 = 1
 
