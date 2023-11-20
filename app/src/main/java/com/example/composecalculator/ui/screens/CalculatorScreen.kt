@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composecalculator.ui.components.CalculatorButton
+import com.example.composecalculator.ui.components.TextArea
 import com.example.composecalculator.ui.theme.Orange
 
 @Composable
@@ -30,7 +31,7 @@ fun CalculatorScreen() {
                 .fillMaxWidth()
                 .height(screenHeight / 2)
         ) {
-            // TODO: Create the text area
+            TextArea()
         }
         Divider(
             thickness = 1.dp,

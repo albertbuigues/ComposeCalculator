@@ -1,6 +1,9 @@
 package com.example.composecalculator.ui.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
@@ -37,6 +40,16 @@ fun CalculatorButton(
         icon?.let {
             Icon(imageVector = icon, contentDescription = "", tint = foregroundColor)
         }
+    }
+}
+
+@Composable
+fun TextArea() {
+    Box(modifier = Modifier
+        .fillMaxHeight()
+        .fillMaxWidth()
+    ) {
+        Text(text = "")
     }
 }
 
