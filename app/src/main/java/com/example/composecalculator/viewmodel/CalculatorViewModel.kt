@@ -8,28 +8,28 @@ class CalculatorViewModel: ViewModel() {
     private var secondNumber = ""
     private var currentOperator = ""
 
-    fun add(firstNumber: Int, secondNumber: Int): Int {
+    fun add(firstNumber: Double, secondNumber: Double): Double {
         this.firstNumber = firstNumber.toString()
         this.secondNumber = secondNumber.toString()
         this.currentOperator = "+"
         return firstNumber + secondNumber
     }
 
-    fun subtract(firstNumber: Int, secondNumber: Int): Int {
+    fun subtract(firstNumber: Double, secondNumber: Double): Double {
         this.firstNumber = firstNumber.toString()
         this.secondNumber = secondNumber.toString()
         this.currentOperator = "-"
         return firstNumber - secondNumber
     }
 
-    fun multiply(firstNumber: Int, secondNumber: Int): Int {
+    fun multiply(firstNumber: Double, secondNumber: Double): Double {
         this.firstNumber = firstNumber.toString()
         this.secondNumber = secondNumber.toString()
         this.currentOperator = "*"
         return firstNumber * secondNumber
     }
 
-    fun divide(firstNumber: Int, secondNumber: Int): Int {
+    fun divide(firstNumber: Double, secondNumber: Double): Double {
         this.firstNumber = firstNumber.toString()
         this.secondNumber = secondNumber.toString()
         this.currentOperator = "/"
