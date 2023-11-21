@@ -1,9 +1,12 @@
 package com.example.composecalculator.ui.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -16,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,17 +50,29 @@ fun CalculatorButton(
 }
 
 @Composable
-fun TextArea(text: String) {
-    Box(modifier = Modifier
-        .fillMaxHeight()
-        .fillMaxWidth()
+fun TextArea(text: String, resultText: String) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(8.dp)
     ) {
-        Text(
-            text = text,
+        Box(
             modifier = Modifier
-                .align(alignment = Alignment.BottomEnd)
-                .padding(bottom = 8.dp, end = 8.dp),
-            fontSize = 24.sp
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = text,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd),
+                fontSize = 24.sp
+            )
+        }
+        Text(
+            text = resultText,
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .fillMaxWidth(),
+            fontSize = 24.sp,
+            textAlign = TextAlign.End
         )
     }
 }
