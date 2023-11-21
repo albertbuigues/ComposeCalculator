@@ -18,12 +18,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.composecalculator.ui.components.CalculatorButton
 import com.example.composecalculator.ui.components.TextArea
 import com.example.composecalculator.ui.theme.Orange
+import com.example.composecalculator.viewmodel.CalculatorViewModel
 
 @Composable
-fun CalculatorScreen() {
+fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     Column {
         Surface(
@@ -31,7 +33,7 @@ fun CalculatorScreen() {
                 .fillMaxWidth()
                 .height(screenHeight / 2)
         ) {
-            TextArea()
+            TextArea(viewModel.text.value)
         }
         Divider(
             thickness = 1.dp,
@@ -42,13 +44,14 @@ fun CalculatorScreen() {
                 .fillMaxWidth()
                 .height(screenHeight / 2)
         ) {
-            ButtonsArea()
+            ButtonsArea(viewModel = viewModel)
         }
     }
 }
 
 @Composable
-fun ButtonsArea() {
+fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
+    val strBuilder = StringBuilder(viewModel.text.value)
     Column(
         Modifier
             .fillMaxWidth()
@@ -59,7 +62,7 @@ fun ButtonsArea() {
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            CalculatorButton(text = "AC", bgColor = Color.Transparent, foregroundColor = Orange) { }
+            CalculatorButton(text = "AC", bgColor = Color.Transparent, foregroundColor = Orange) { viewModel.text.value = "" }
             CalculatorButton(icon = Icons.Outlined.Backspace, bgColor = Color.Transparent, foregroundColor = Orange) { }
             CalculatorButton(text = "%", bgColor = Color.Transparent, foregroundColor = Orange) { }
             CalculatorButton(text = "/", bgColor = Color.Transparent, foregroundColor = Orange) { }
@@ -92,7 +95,10 @@ fun ButtonsArea() {
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            CalculatorButton(text = "1", bgColor = Color.Transparent, foregroundColor = Color.Black) { }
+            CalculatorButton(text = "1", bgColor = Color.Transparent, foregroundColor = Color.Black) {
+                strBuilder.append("1")
+                viewModel.text.value = strBuilder.toString()
+            }
             CalculatorButton(text = "2", bgColor = Color.Transparent, foregroundColor = Color.Black) { }
             CalculatorButton(text = "3", bgColor = Color.Transparent, foregroundColor = Color.Black) { }
             CalculatorButton(text = "+", bgColor = Color.Transparent, foregroundColor = Orange) { }
