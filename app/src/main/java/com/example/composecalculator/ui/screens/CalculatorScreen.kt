@@ -67,18 +67,14 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
             CalculatorButton(text = "AC", bgColor = Color.Transparent, foregroundColor = Orange) {
                 viewModel.text.value = ""
                 viewModel.resultText.value = "0"
-                viewModel.currentOperator = null
-                viewModel.firstNumber = null
-                viewModel.secondNumber = null
+                resetViewModelValues(viewModel)
             }
             CalculatorButton(icon = Icons.Outlined.Backspace, bgColor = Color.Transparent, foregroundColor = Orange) {
                 val noSpacedResultText = viewModel.resultText.value.replace(" ", "")
                 if (noSpacedResultText.length == 2) {
                     viewModel.resultText.value = "0"
                     viewModel.text.value = ""
-                    viewModel.currentOperator = null
-                    viewModel.firstNumber = null
-                    viewModel.secondNumber = null
+                    resetViewModelValues(viewModel)
                 }
                 else if (viewModel.text.value != "0" && viewModel.resultText.value != "= 0" && viewModel.text.value.isNotEmpty() && viewModel.resultText.value.isNotEmpty()) {
                     viewModel.text.value = viewModel.text.value.removeRange(viewModel.text.value.length-1, viewModel.text.value.length)
@@ -199,6 +195,7 @@ private fun appendStr(viewModel: CalculatorViewModel, textAreaStrBuilder: String
         setSecondNumber(textAreaStrBuilder, viewModel)
         val operationRes = performOperation(viewModel = viewModel)
         operationRes?.let {
+            viewModel.resultList.add(it)
             resultAreaStrBuilder.clear()
             resultAreaStrBuilder.append("=$it")
             viewModel.resultText.value = resultAreaStrBuilder.toString()
@@ -207,9 +204,9 @@ private fun appendStr(viewModel: CalculatorViewModel, textAreaStrBuilder: String
 }
 
 private fun setOrChangeOperator(strBuilder: StringBuilder, viewModel: CalculatorViewModel, newOperator: String) {
-    var newString = ""
-    if (currentOperatorHasBeenSet(viewModel = viewModel)) {
-        newString = strBuilder.replaceFirst(regex = Regex("[+\\-*\\/]"), replacement = newOperator)
+    var newString: String
+    if (currentOperatorHasBeenSet(viewModel = viewModel) && viewModel.resultList.isEmpty()) {
+        newString = strBuilder.replaceFirst(regex = Regex("[+\\-*/]"), replacement = newOperator)
         strBuilder.clear().append(newString)
     } else {
         strBuilder.append(newOperator)
@@ -226,12 +223,16 @@ private fun currentOperatorHasBeenSet(viewModel: CalculatorViewModel): Boolean {
 }
 
 private fun setFirstNumber(strBuilder: StringBuilder, viewModel: CalculatorViewModel) {
-    val operatorPosition = viewModel.currentOperator?.let { strBuilder.indexOf(it) }
-    viewModel.firstNumber = strBuilder.substring(0, operatorPosition ?: return).toDouble()
+    if (viewModel.resultList.isNotEmpty()) {
+        viewModel.firstNumber = viewModel.resultList.last()
+    } else {
+        val operatorPosition = viewModel.currentOperator?.let { strBuilder.lastIndexOf(it) }
+        viewModel.firstNumber = strBuilder.substring(0, operatorPosition ?: return).toDouble()
+    }
 }
 
 private fun setSecondNumber(strBuilder: StringBuilder, viewModel: CalculatorViewModel) {
-    val operatorPosition = viewModel.currentOperator?.let { strBuilder.indexOf(it) }
+    val operatorPosition = viewModel.currentOperator?.let { strBuilder.lastIndexOf(it) }
     if (operatorPosition != strBuilder.toString().length-1) {
         viewModel.secondNumber = strBuilder.substring((operatorPosition?.plus(1)) ?: return).toDouble()
     }
@@ -245,10 +246,16 @@ private fun performOperation(viewModel: CalculatorViewModel): Double? {
             "-" -> { res = viewModel.subtract(viewModel.firstNumber!!, viewModel.secondNumber!!) }
             "x" -> { res = viewModel.multiply(viewModel.firstNumber!!, viewModel.secondNumber!!) }
             "/" -> { res = viewModel.divide(viewModel.firstNumber!!, viewModel.secondNumber!!) }
-
         }
     }
     return res
+}
+
+private fun resetViewModelValues(viewModel: CalculatorViewModel) {
+    viewModel.firstNumber = null
+    viewModel.secondNumber = null
+    viewModel.currentOperator = null
+    viewModel.resultList.clear()
 }
 
 @Composable

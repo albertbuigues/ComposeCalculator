@@ -10,6 +10,7 @@ class CalculatorViewModel: ViewModel() {
     var currentOperator: String? = null
     var text = mutableStateOf("")
     var resultText = mutableStateOf("0")
+    var resultList = mutableListOf<Double>()
 
     fun add(firstNumber: Double, secondNumber: Double): Double {
         return firstNumber + secondNumber
