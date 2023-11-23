@@ -161,7 +161,9 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
             CalculatorButton(text = "0", bgColor = Color.Transparent, foregroundColor = Color.Black) {
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "0")
             }
-            CalculatorButton(text = ",", bgColor = Color.Transparent, foregroundColor = Color.Black) { }
+            CalculatorButton(text = ",", bgColor = Color.Transparent, foregroundColor = Color.Black) {
+                appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, ".")
+            }
             CalculatorButton(text = "=", bgColor = Orange, foregroundColor = Color.White) { }
         }
     }
@@ -174,7 +176,31 @@ private fun appendStr(viewModel: CalculatorViewModel, textAreaStrBuilder: String
         } else { return }
     }
     if (!strToAppend.isDigitsOnly()) {
-        // TODO: When a coma is pressed
+        if (textAreaStrBuilder.isEmpty()) {
+            textAreaStrBuilder.append("0.")
+            resultAreaStrBuilder.append("=0.")
+        } else {
+            if (viewModel.currentOperator == null) {
+                if (textAreaStrBuilder.contains(".")) { return } else {
+                    textAreaStrBuilder.append(".")
+                    resultAreaStrBuilder.append(".")
+                }
+            } else {
+                if (!textAreaStrBuilder.last().isDigit()) {
+                    if (textAreaStrBuilder.last() == '%') { return }
+                    textAreaStrBuilder.append("0.")
+                    resultAreaStrBuilder.append("0.")
+                } else {
+                    val operatorLastPos = textAreaStrBuilder.lastIndexOf(viewModel.currentOperator!!)
+                    if (textAreaStrBuilder.substring(operatorLastPos, textAreaStrBuilder.length).contains(".")) {
+                        return
+                    } else {
+                        textAreaStrBuilder.append(".")
+                        resultAreaStrBuilder.append(".")
+                    }
+                }
+            }
+        }
     } else {
         if (viewModel.text.value.length == 1 && viewModel.text.value[0] == '0') {
             if (strToAppend == "0") { return } else {
@@ -190,16 +216,16 @@ private fun appendStr(viewModel: CalculatorViewModel, textAreaStrBuilder: String
             textAreaStrBuilder.append(strToAppend)
             resultAreaStrBuilder.append(strToAppend)
         }
-        viewModel.text.value = textAreaStrBuilder.toString()
+    }
+    viewModel.text.value = textAreaStrBuilder.toString()
+    viewModel.resultText.value = resultAreaStrBuilder.toString()
+    setSecondNumber(textAreaStrBuilder, viewModel)
+    val operationRes = performOperation(viewModel = viewModel)
+    operationRes?.let {
+        viewModel.resultList.add(it)
+        resultAreaStrBuilder.clear()
+        resultAreaStrBuilder.append("=$it")
         viewModel.resultText.value = resultAreaStrBuilder.toString()
-        setSecondNumber(textAreaStrBuilder, viewModel)
-        val operationRes = performOperation(viewModel = viewModel)
-        operationRes?.let {
-            viewModel.resultList.add(it)
-            resultAreaStrBuilder.clear()
-            resultAreaStrBuilder.append("=$it")
-            viewModel.resultText.value = resultAreaStrBuilder.toString()
-        }
     }
 }
 
