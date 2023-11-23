@@ -9,6 +9,9 @@ class CalculatorViewModel: ViewModel() {
     var secondNumber: Double? = null
     var currentOperator: String? = null
     var text = mutableStateOf("")
+    var resultText = mutableStateOf("0")
+    var resultList = mutableListOf<Double>()
+    var isResultFocused = mutableStateOf(true)
 
     fun add(firstNumber: Double, secondNumber: Double): Double {
         return firstNumber + secondNumber
@@ -24,5 +27,9 @@ class CalculatorViewModel: ViewModel() {
 
     fun divide(firstNumber: Double, secondNumber: Double): Double {
         return firstNumber/secondNumber
+    }
+
+    fun percentage(firstNumber: Double): Double {
+        return firstNumber/100
     }
 }

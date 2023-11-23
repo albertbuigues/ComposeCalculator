@@ -1,9 +1,13 @@
 package com.example.composecalculator.ui.components
 
+import androidx.compose.animation.core.animateSizeAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -12,11 +16,16 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -46,17 +55,35 @@ fun CalculatorButton(
 }
 
 @Composable
-fun TextArea(text: String) {
-    Box(modifier = Modifier
-        .fillMaxHeight()
-        .fillMaxWidth()
+fun TextArea(text: String, resultText: String, isResultFocused: Boolean) {
+    val resSize by animateSizeAsState(targetValue = if (isResultFocused) { Size(24.sp.value, 24.sp.value) } else { Size(18.sp.value, 18.sp.value) }, label = "")
+    val txtSize by animateSizeAsState(targetValue = if (isResultFocused) { Size(18.sp.value, 18.sp.value) } else { Size(24.sp.value, 24.sp.value) }, label = "")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
     ) {
-        Text(
-            text = text,
+        Box(
             modifier = Modifier
-                .align(alignment = Alignment.BottomEnd)
-                .padding(bottom = 8.dp, end = 8.dp),
-            fontSize = 24.sp
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = text,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd),
+                color = if (isResultFocused) { Color.LightGray } else { Color.Black },
+                fontSize = TextUnit(txtSize.height, TextUnitType.Sp)
+            )
+        }
+        Text(
+            text = resultText,
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .fillMaxWidth(),
+            color = if (isResultFocused) { Color.Black } else { Color.LightGray },
+            fontSize = TextUnit(resSize.height, TextUnitType.Sp),
+            textAlign = TextAlign.End
         )
     }
 }
