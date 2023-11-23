@@ -1,6 +1,6 @@
 package com.example.composecalculator.ui.components
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateSizeAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -16,12 +16,16 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -52,8 +56,8 @@ fun CalculatorButton(
 
 @Composable
 fun TextArea(text: String, resultText: String, isResultFocused: Boolean) {
-    val resSize = if (isResultFocused) { 24.sp } else { 18.sp }
-    val txtSize = if (isResultFocused) { 18.sp } else { 24.sp }
+    val resSize by animateSizeAsState(targetValue = if (isResultFocused) { Size(24.sp.value, 24.sp.value) } else { Size(18.sp.value, 18.sp.value) }, label = "")
+    val txtSize by animateSizeAsState(targetValue = if (isResultFocused) { Size(18.sp.value, 18.sp.value) } else { Size(24.sp.value, 24.sp.value) }, label = "")
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -67,18 +71,18 @@ fun TextArea(text: String, resultText: String, isResultFocused: Boolean) {
             Text(
                 text = text,
                 modifier = Modifier
-                    .align(Alignment.BottomEnd).animateContentSize(),
+                    .align(Alignment.BottomEnd),
                 color = if (isResultFocused) { Color.LightGray } else { Color.Black },
-                fontSize = txtSize
+                fontSize = TextUnit(txtSize.height, TextUnitType.Sp)
             )
         }
         Text(
             text = resultText,
             modifier = Modifier
                 .height(IntrinsicSize.Min)
-                .fillMaxWidth().animateContentSize(),
+                .fillMaxWidth(),
             color = if (isResultFocused) { Color.Black } else { Color.LightGray },
-            fontSize = resSize,
+            fontSize = TextUnit(resSize.height, TextUnitType.Sp),
             textAlign = TextAlign.End
         )
     }
