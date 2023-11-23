@@ -81,9 +81,14 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
                     viewModel.resultText.value = viewModel.resultText.value.removeRange(viewModel.resultText.value.length-1, viewModel.resultText.value.length)
                 }
             }
-            CalculatorButton(text = "%", bgColor = Color.Transparent, foregroundColor = Orange) { }
+            CalculatorButton(text = "%", bgColor = Color.Transparent, foregroundColor = Orange) {
+                textAreaStrBuilder.append("%")
+                viewModel.currentOperator = "%"
+                setFirstNumber(textAreaStrBuilder, viewModel)
+                setOrChangeOperator(textAreaStrBuilder, resultAreaStrBuilder, viewModel, "%")
+            }
             CalculatorButton(text = "/", bgColor = Color.Transparent, foregroundColor = Orange) {
-                setOrChangeOperator(textAreaStrBuilder, viewModel, "/")
+                setOrChangeOperator(textAreaStrBuilder, resultAreaStrBuilder, viewModel, "/")
                 viewModel.currentOperator = "/"
                 setFirstNumber(textAreaStrBuilder, viewModel)
             }
@@ -104,7 +109,7 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "9")
             }
             CalculatorButton(text = "x", bgColor = Color.Transparent, foregroundColor = Orange) {
-                setOrChangeOperator(textAreaStrBuilder, viewModel, "x")
+                setOrChangeOperator(textAreaStrBuilder, resultAreaStrBuilder, viewModel, "x")
                 viewModel.currentOperator = "x"
                 setFirstNumber(textAreaStrBuilder, viewModel)
             }
@@ -125,7 +130,7 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "6")
             }
             CalculatorButton(text = "-", bgColor = Color.Transparent, foregroundColor = Orange) {
-                setOrChangeOperator(textAreaStrBuilder, viewModel, "-")
+                setOrChangeOperator(textAreaStrBuilder, resultAreaStrBuilder, viewModel, "-")
                 viewModel.currentOperator = "-"
                 setFirstNumber(textAreaStrBuilder, viewModel)
             }
@@ -146,7 +151,7 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "3")
             }
             CalculatorButton(text = "+", bgColor = Color.Transparent, foregroundColor = Orange) {
-                setOrChangeOperator(textAreaStrBuilder, viewModel, "+")
+                setOrChangeOperator(textAreaStrBuilder, resultAreaStrBuilder, viewModel, "+")
                 viewModel.currentOperator = "+"
                 setFirstNumber(textAreaStrBuilder, viewModel)
             }
@@ -170,12 +175,12 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
 }
 
 private fun appendStr(viewModel: CalculatorViewModel, textAreaStrBuilder: StringBuilder, resultAreaStrBuilder: StringBuilder, strToAppend: String) {
-    if (resultAreaStrBuilder.toString() == "0") {
+    if (resultAreaStrBuilder.isNotEmpty() && resultAreaStrBuilder.toString() == "0") {
         if (strToAppend != "0") {
             resultAreaStrBuilder.clear()
         } else { return }
     }
-    if (!strToAppend.isDigitsOnly()) {
+    if (!strToAppend.isDigitsOnly() && viewModel.currentOperator != "%") {
         if (textAreaStrBuilder.isEmpty()) {
             textAreaStrBuilder.append("0.")
             resultAreaStrBuilder.append("=0.")
@@ -202,19 +207,21 @@ private fun appendStr(viewModel: CalculatorViewModel, textAreaStrBuilder: String
             }
         }
     } else {
-        if (viewModel.text.value.length == 1 && viewModel.text.value[0] == '0') {
-            if (strToAppend == "0") { return } else {
-                textAreaStrBuilder.clear()
+        if (viewModel.currentOperator != "%") {
+            if (viewModel.text.value.length == 1 && viewModel.text.value[0] == '0') {
+                if (strToAppend == "0") { return } else {
+                    textAreaStrBuilder.clear()
+                    textAreaStrBuilder.append(strToAppend)
+                    resultAreaStrBuilder.clear()
+                    resultAreaStrBuilder.append("=$strToAppend")
+                }
+            } else if (textAreaStrBuilder.isEmpty() && resultAreaStrBuilder.isEmpty()) {
                 textAreaStrBuilder.append(strToAppend)
-                resultAreaStrBuilder.clear()
                 resultAreaStrBuilder.append("=$strToAppend")
+            } else {
+                textAreaStrBuilder.append(strToAppend)
+                resultAreaStrBuilder.append(strToAppend)
             }
-        } else if (textAreaStrBuilder.isEmpty() && resultAreaStrBuilder.isEmpty()) {
-            textAreaStrBuilder.append(strToAppend)
-            resultAreaStrBuilder.append("=$strToAppend")
-        } else {
-            textAreaStrBuilder.append(strToAppend)
-            resultAreaStrBuilder.append(strToAppend)
         }
     }
     viewModel.text.value = textAreaStrBuilder.toString()
@@ -229,17 +236,30 @@ private fun appendStr(viewModel: CalculatorViewModel, textAreaStrBuilder: String
     }
 }
 
-private fun setOrChangeOperator(strBuilder: StringBuilder, viewModel: CalculatorViewModel, newOperator: String) {
+private fun setOrChangeOperator(strBuilder: StringBuilder, resultStrBuilder: StringBuilder, viewModel: CalculatorViewModel, newOperator: String) {
     var newString: String
     if (currentOperatorHasBeenSet(viewModel = viewModel) && viewModel.resultList.isEmpty()) {
         newString = strBuilder.replaceFirst(regex = Regex("[+\\-*/]"), replacement = newOperator)
         strBuilder.clear().append(newString)
     } else {
+        if (currentOperatorHasBeenSet(viewModel) && viewModel.currentOperator == "%") {
+            val stringWithoutOperator = strBuilder.removeSuffix("%")
+            strBuilder.clear().append(stringWithoutOperator)
+        }
         strBuilder.append(newOperator)
     }
     if (!strBuilder[0].isDigit()) {
         newString = "0${strBuilder}"
         strBuilder.clear().append(newString)
+    }
+    if (newOperator == "%") {
+        val res = performOperation(viewModel)
+        viewModel.resultList.add(res!!)
+        resultStrBuilder.clear()
+        resultStrBuilder.append("=$res")
+        viewModel.resultText.value = resultStrBuilder.toString()
+        val stringWithoutOperator = strBuilder.removeSuffix("%")
+        strBuilder.clear().append(stringWithoutOperator)
     }
     viewModel.text.value = strBuilder.toString()
 }
@@ -258,20 +278,27 @@ private fun setFirstNumber(strBuilder: StringBuilder, viewModel: CalculatorViewM
 }
 
 private fun setSecondNumber(strBuilder: StringBuilder, viewModel: CalculatorViewModel) {
-    val operatorPosition = viewModel.currentOperator?.let { strBuilder.lastIndexOf(it) }
-    if (operatorPosition != strBuilder.toString().length-1) {
-        viewModel.secondNumber = strBuilder.substring((operatorPosition?.plus(1)) ?: return).toDouble()
+    if (viewModel.currentOperator != "%") {
+        val operatorPosition = viewModel.currentOperator?.let { strBuilder.lastIndexOf(it) }
+        if (operatorPosition != strBuilder.toString().length-1) {
+            viewModel.secondNumber = strBuilder.substring((operatorPosition?.plus(1)) ?: return).toDouble()
+        }
     }
 }
 
 private fun performOperation(viewModel: CalculatorViewModel): Double? {
     var res: Double? = null
-    if (viewModel.currentOperator != null && viewModel.firstNumber != null && viewModel.secondNumber != null) {
-        when(viewModel.currentOperator) {
-            "+" -> { res = viewModel.add(viewModel.firstNumber!!, viewModel.secondNumber!!) }
-            "-" -> { res = viewModel.subtract(viewModel.firstNumber!!, viewModel.secondNumber!!) }
-            "x" -> { res = viewModel.multiply(viewModel.firstNumber!!, viewModel.secondNumber!!) }
-            "/" -> { res = viewModel.divide(viewModel.firstNumber!!, viewModel.secondNumber!!) }
+    if (viewModel.currentOperator != null && viewModel.firstNumber != null) {
+        if (viewModel.currentOperator == "%") {
+            res = viewModel.percentage(firstNumber = viewModel.firstNumber!!)
+        }
+        if (viewModel.secondNumber != null) {
+            when(viewModel.currentOperator) {
+                "+" -> { res = viewModel.add(viewModel.firstNumber!!, viewModel.secondNumber!!) }
+                "-" -> { res = viewModel.subtract(viewModel.firstNumber!!, viewModel.secondNumber!!) }
+                "x" -> { res = viewModel.multiply(viewModel.firstNumber!!, viewModel.secondNumber!!) }
+                "/" -> { res = viewModel.divide(viewModel.firstNumber!!, viewModel.secondNumber!!) }
+            }
         }
     }
     return res

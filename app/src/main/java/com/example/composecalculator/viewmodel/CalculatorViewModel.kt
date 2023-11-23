@@ -27,4 +27,8 @@ class CalculatorViewModel: ViewModel() {
     fun divide(firstNumber: Double, secondNumber: Double): Double {
         return firstNumber/secondNumber
     }
+
+    fun percentage(firstNumber: Double): Double {
+        return firstNumber/100
+    }
 }
