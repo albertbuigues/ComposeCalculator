@@ -34,7 +34,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                 .fillMaxWidth()
                 .height(screenHeight / 2)
         ) {
-            TextArea(viewModel.text.value, viewModel.resultText.value)
+            TextArea(viewModel.text.value, viewModel.resultText.value, viewModel.isResultFocused.value)
         }
         Divider(
             thickness = 1.dp,
@@ -68,6 +68,7 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
                 viewModel.text.value = ""
                 viewModel.resultText.value = "0"
                 resetViewModelValues(viewModel)
+                viewModel.isResultFocused.value = true
             }
             CalculatorButton(icon = Icons.Outlined.Backspace, bgColor = Color.Transparent, foregroundColor = Orange) {
                 val noSpacedResultText = viewModel.resultText.value.replace(" ", "")
@@ -80,14 +81,17 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
                     viewModel.text.value = viewModel.text.value.removeRange(viewModel.text.value.length-1, viewModel.text.value.length)
                     viewModel.resultText.value = viewModel.resultText.value.removeRange(viewModel.resultText.value.length-1, viewModel.resultText.value.length)
                 }
+                viewModel.isResultFocused.value = viewModel.text.value.isEmpty()
             }
             CalculatorButton(text = "%", bgColor = Color.Transparent, foregroundColor = Orange) {
+                viewModel.isResultFocused.value = false
                 textAreaStrBuilder.append("%")
                 viewModel.currentOperator = "%"
                 setFirstNumber(textAreaStrBuilder, viewModel)
                 setOrChangeOperator(textAreaStrBuilder, resultAreaStrBuilder, viewModel, "%")
             }
             CalculatorButton(text = "/", bgColor = Color.Transparent, foregroundColor = Orange) {
+                viewModel.isResultFocused.value = false
                 setOrChangeOperator(textAreaStrBuilder, resultAreaStrBuilder, viewModel, "/")
                 viewModel.currentOperator = "/"
                 setFirstNumber(textAreaStrBuilder, viewModel)
@@ -100,15 +104,19 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             CalculatorButton(text = "7", bgColor = Color.Transparent, foregroundColor = Color.Black) {
+                viewModel.isResultFocused.value = false
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "7")
             }
             CalculatorButton(text = "8", bgColor = Color.Transparent, foregroundColor = Color.Black) {
+                viewModel.isResultFocused.value = false
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "8")
             }
             CalculatorButton(text = "9", bgColor = Color.Transparent, foregroundColor = Color.Black) {
+                viewModel.isResultFocused.value = false
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "9")
             }
             CalculatorButton(text = "x", bgColor = Color.Transparent, foregroundColor = Orange) {
+                viewModel.isResultFocused.value = false
                 setOrChangeOperator(textAreaStrBuilder, resultAreaStrBuilder, viewModel, "x")
                 viewModel.currentOperator = "x"
                 setFirstNumber(textAreaStrBuilder, viewModel)
@@ -121,15 +129,19 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             CalculatorButton(text = "4", bgColor = Color.Transparent, foregroundColor = Color.Black) {
+                viewModel.isResultFocused.value = false
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "4")
             }
             CalculatorButton(text = "5", bgColor = Color.Transparent, foregroundColor = Color.Black) {
+                viewModel.isResultFocused.value = false
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "5")
             }
             CalculatorButton(text = "6", bgColor = Color.Transparent, foregroundColor = Color.Black) {
+                viewModel.isResultFocused.value = false
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "6")
             }
             CalculatorButton(text = "-", bgColor = Color.Transparent, foregroundColor = Orange) {
+                viewModel.isResultFocused.value = false
                 setOrChangeOperator(textAreaStrBuilder, resultAreaStrBuilder, viewModel, "-")
                 viewModel.currentOperator = "-"
                 setFirstNumber(textAreaStrBuilder, viewModel)
@@ -142,15 +154,19 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             CalculatorButton(text = "1", bgColor = Color.Transparent, foregroundColor = Color.Black) {
+                viewModel.isResultFocused.value = false
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "1")
             }
             CalculatorButton(text = "2", bgColor = Color.Transparent, foregroundColor = Color.Black) {
+                viewModel.isResultFocused.value = false
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "2")
             }
             CalculatorButton(text = "3", bgColor = Color.Transparent, foregroundColor = Color.Black) {
+                viewModel.isResultFocused.value = false
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "3")
             }
             CalculatorButton(text = "+", bgColor = Color.Transparent, foregroundColor = Orange) {
+                viewModel.isResultFocused.value = false
                 setOrChangeOperator(textAreaStrBuilder, resultAreaStrBuilder, viewModel, "+")
                 viewModel.currentOperator = "+"
                 setFirstNumber(textAreaStrBuilder, viewModel)
@@ -164,12 +180,16 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
         ) {
             CalculatorButton(icon = Icons.Outlined.OpenWith, bgColor = Color.Transparent, foregroundColor = Orange) { }
             CalculatorButton(text = "0", bgColor = Color.Transparent, foregroundColor = Color.Black) {
+                viewModel.isResultFocused.value = false
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "0")
             }
             CalculatorButton(text = ",", bgColor = Color.Transparent, foregroundColor = Color.Black) {
+                viewModel.isResultFocused.value = false
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, ".")
             }
-            CalculatorButton(text = "=", bgColor = Orange, foregroundColor = Color.White) { }
+            CalculatorButton(text = "=", bgColor = Orange, foregroundColor = Color.White) {
+                viewModel.isResultFocused.value = true
+            }
         }
     }
 }

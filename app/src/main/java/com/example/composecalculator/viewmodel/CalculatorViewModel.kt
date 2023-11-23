@@ -11,6 +11,7 @@ class CalculatorViewModel: ViewModel() {
     var text = mutableStateOf("")
     var resultText = mutableStateOf("0")
     var resultList = mutableListOf<Double>()
+    var isResultFocused = mutableStateOf(true)
 
     fun add(firstNumber: Double, secondNumber: Double): Double {
         return firstNumber + secondNumber

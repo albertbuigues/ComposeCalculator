@@ -1,5 +1,6 @@
 package com.example.composecalculator.ui.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -50,9 +51,13 @@ fun CalculatorButton(
 }
 
 @Composable
-fun TextArea(text: String, resultText: String) {
+fun TextArea(text: String, resultText: String, isResultFocused: Boolean) {
+    val resSize = if (isResultFocused) { 24.sp } else { 18.sp }
+    val txtSize = if (isResultFocused) { 18.sp } else { 24.sp }
     Column(
-        modifier = Modifier.fillMaxSize().padding(8.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
     ) {
         Box(
             modifier = Modifier
@@ -62,16 +67,18 @@ fun TextArea(text: String, resultText: String) {
             Text(
                 text = text,
                 modifier = Modifier
-                    .align(Alignment.BottomEnd),
-                fontSize = 24.sp
+                    .align(Alignment.BottomEnd).animateContentSize(),
+                color = if (isResultFocused) { Color.LightGray } else { Color.Black },
+                fontSize = txtSize
             )
         }
         Text(
             text = resultText,
             modifier = Modifier
                 .height(IntrinsicSize.Min)
-                .fillMaxWidth(),
-            fontSize = 24.sp,
+                .fillMaxWidth().animateContentSize(),
+            color = if (isResultFocused) { Color.Black } else { Color.LightGray },
+            fontSize = resSize,
             textAlign = TextAlign.End
         )
     }
