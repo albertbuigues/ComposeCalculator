@@ -11,8 +11,6 @@ Use of viewmodel to avoid configuration changes bugs in text area and perform ba
 
 ### Screenshots:
 
-![Screenshot_1700826844](https://github.com/albertbuigues/ComposeCalculator/assets/74981110/1edc4b4b-d0ea-4c1c-8256-8ce3ce0b4ca3)
-
-![Screenshot_1700826849](https://github.com/albertbuigues/ComposeCalculator/assets/74981110/023dd1e0-f399-45b8-9ae7-15c38a5c1d47)
-
-![Screenshot_1700826856](https://github.com/albertbuigues/ComposeCalculator/assets/74981110/8e1ba0f5-5be1-45d4-bd19-4fefad3f349c)
+![Screenshot_1700826844](https://github.com/albertbuigues/ComposeCalculator/assets/74981110/002629fe-1529-4b94-b061-a1e82f631e9b)
+![Screenshot_1700826849](https://github.com/albertbuigues/ComposeCalculator/assets/74981110/006af026-f2be-4e9b-afa2-46d2821e6eab)
+![Screenshot_1700826856](https://github.com/albertbuigues/ComposeCalculator/assets/74981110/713ab66c-e30c-4e96-bddb-a090c1fff81b)
