@@ -10,6 +10,7 @@ class CalculatorViewModel: ViewModel() {
     var currentOperator: String? = null
     var text = mutableStateOf("")
     var resultText = mutableStateOf("0")
+    var prevResultsText = mutableStateOf("")
     var resultList = mutableListOf<Double>()
     var isResultFocused = mutableStateOf(true)
 
