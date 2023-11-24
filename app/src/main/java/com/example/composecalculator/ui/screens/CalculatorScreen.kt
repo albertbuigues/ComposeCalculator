@@ -1,5 +1,6 @@
 package com.example.composecalculator.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,13 +14,17 @@ import androidx.compose.material.icons.outlined.OpenWith
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.core.text.isDigitsOnly
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.composecalculator.ui.components.CalculatorButton
 import com.example.composecalculator.ui.components.TextArea
 import com.example.composecalculator.ui.theme.Orange
@@ -34,7 +39,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                 .fillMaxWidth()
                 .height(screenHeight / 2)
         ) {
-            TextArea(viewModel.text.value, viewModel.resultText.value, viewModel.isResultFocused.value)
+            TextArea(viewModel.prevResultsText.value, viewModel.text.value, viewModel.resultText.value, viewModel.isResultFocused.value)
         }
         Divider(
             thickness = 1.dp,
@@ -52,12 +57,26 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
 
 @Composable
 fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
+    var isExpanded by remember { mutableStateOf(false) }
     val textAreaStrBuilder = StringBuilder(viewModel.text.value)
     val resultAreaStrBuilder = StringBuilder(viewModel.resultText.value)
     Column(
         Modifier
             .fillMaxWidth()
             .fillMaxHeight(), verticalArrangement = Arrangement.SpaceAround) {
+        AnimatedVisibility(visible = isExpanded) {
+            Row(
+                Modifier
+                    .padding(horizontal = 20.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                CalculatorButton(text = "lg", bgColor = Color.Transparent, foregroundColor = Color.Gray) {}
+                CalculatorButton(text = "ln", bgColor = Color.Transparent, foregroundColor = Color.Gray) {}
+                CalculatorButton(text = "(", bgColor = Color.Transparent, foregroundColor = Color.Gray) {}
+                CalculatorButton(text = ")", bgColor = Color.Transparent, foregroundColor = Color.Gray) {}
+            }
+        }
         Row(
             Modifier
                 .padding(horizontal = 20.dp)
@@ -69,6 +88,7 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
                 viewModel.resultText.value = "0"
                 resetViewModelValues(viewModel)
                 viewModel.isResultFocused.value = true
+                viewModel.prevResultsText.value = ""
             }
             CalculatorButton(icon = Icons.Outlined.Backspace, bgColor = Color.Transparent, foregroundColor = Orange) {
                 val noSpacedResultText = viewModel.resultText.value.replace(" ", "")
@@ -178,7 +198,9 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            CalculatorButton(icon = Icons.Outlined.OpenWith, bgColor = Color.Transparent, foregroundColor = Orange) { }
+            CalculatorButton(icon = Icons.Outlined.OpenWith, bgColor = Color.Transparent, foregroundColor = Orange, isAnimated = true) {
+                isExpanded = !isExpanded
+            }
             CalculatorButton(text = "0", bgColor = Color.Transparent, foregroundColor = Color.Black) {
                 viewModel.isResultFocused.value = false
                 appendStr(viewModel, textAreaStrBuilder, resultAreaStrBuilder, "0")
@@ -189,6 +211,7 @@ fun ButtonsArea(viewModel: CalculatorViewModel = viewModel()) {
             }
             CalculatorButton(text = "=", bgColor = Orange, foregroundColor = Color.White) {
                 viewModel.isResultFocused.value = true
+                viewModel.prevResultsText.value += "${viewModel.text.value}\n${viewModel.resultText.value}\n"
             }
         }
     }
